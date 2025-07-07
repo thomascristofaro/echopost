@@ -1,0 +1,5 @@
+feedparser
+newspaper4k
+semantic-kernel
+openai
+python-dotenv
