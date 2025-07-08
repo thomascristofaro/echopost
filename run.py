@@ -1,4 +1,4 @@
-from echopost.main import run
+from echopost import run
 
 if __name__ == "__main__":
     run()

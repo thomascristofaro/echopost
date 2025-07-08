@@ -3,3 +3,4 @@ newspaper4k
 semantic-kernel
 openai
 python-dotenv
+lxml_html_clean
