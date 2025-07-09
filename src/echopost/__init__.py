@@ -3,8 +3,10 @@ EchoPost - Un tool per leggere feed RSS, estrarre articoli rilevanti con AI,
 e pubblicarli automaticamente su LinkedIn.
 """
 
-from .main import run
+from .main import main
+from .config import load_settings
 
 __all__ = [
-    "run"
+    "main",
+    "load_settings"
 ]

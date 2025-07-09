@@ -1,24 +1,26 @@
-import os
 import json
-from pathlib import Path
+import os
 from dotenv import load_dotenv
+from pydantic import BaseModel
+from typing import List
 
-# Carica .env
-load_dotenv()
+class AppConfig(BaseModel):
+    feed_urls: List[str]
+    relevance_prompt: str
 
-# Percorsi
-BASE_DIR = Path(__file__).resolve().parent
-APPSETTINGS_PATH = BASE_DIR / "appsettings.json"
+class Settings(BaseModel):
+    environment: str
+    openai_api_key: str
+    db_path: str
+    app: AppConfig
 
-# Carica appsettings.json
-with open(APPSETTINGS_PATH, "r", encoding="utf-8") as f:
-    appsettings = json.load(f)
-
-# Config accessibile ovunque
-FEED_URLS = appsettings["feeds"]
-DOWNLOAD_FOLDER = appsettings["download_folder"]
-LLM_CONFIG = appsettings["llm"]
-
-# Variabili segrete da .env
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-LINKEDIN_ACCESS_TOKEN = os.getenv("LINKEDIN_ACCESS_TOKEN")
+def load_settings() -> Settings:
+    load_dotenv()
+    with open("appsettings.json") as f:
+        data = json.load(f)
+    return Settings(
+        environment=data["environment"],
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        db_path=data["db_path"],
+        app=AppConfig(**data["app"])
+    )
