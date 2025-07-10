@@ -1,25 +1,21 @@
+import feedparser
+from typing import List
 from .database import Database
 from newspaper import Article as NPArticle
-from typing import List
 from ..model.article import Article
 
-def parse_and_filter(entries: List[dict], prompt: str, openai_key: str) -> List[Article]:
-    articles = []
-    for entry in entries:
-        try:
-            a = NPArticle(entry.link)
-            a.download()
-            a.parse()
-            # TODO: call LLM to filter based on prompt
-            articles.append(Article(
-                title=a.title,
-                url=entry.link,
-                summary=entry.get("summary", ""),
-                content=a.text,
-            ))
-        except Exception:
-            continue
-    return articles
+def fetch_and_store_feeds(urls: List[str], db: Database):
+    for url in urls:
+        feed = feedparser.parse(url)
+        entries = feed.values()
+        for entry in entries:
+            if not db.article_exists(entry["link"]):
+                db.insert_article(
+                    url=entry["link"],
+                    title=entry["title"],
+                    published=entry.get("pubDate", ""),
+                    summary=entry.get("description", "")
+                )
 
 def filter_and_download_articles(db: Database, kernel, filter_instructions: str):
     articles = db.get_articles_without_content()

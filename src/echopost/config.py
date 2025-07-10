@@ -5,7 +5,8 @@ from pydantic import BaseModel
 from typing import List
 
 class Settings(BaseModel):
-    openai_api_key: str
+    azure_api_key: str
+    azure_endpoint: str
     db_path: str
     feed_urls: List[str]
     relevance_prompt: str = ""
@@ -20,7 +21,9 @@ def load_settings() -> Settings:
     with open("appsettings.json") as f:
         data = json.load(f)
     return Settings(
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        azure_api_key=os.getenv("AZURE_API_KEY", ""),
+        azure_endpoint=os.getenv("AZURE_ENDPOINT", ""),
+
         feed_urls=data.get("feed_urls", []),
         db_path=data.get("db_path"),
         relevance_prompt=data.get("relevance_prompt", ""),
